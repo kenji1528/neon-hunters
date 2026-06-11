@@ -609,13 +609,13 @@ export default function TetrisPage() {
           </div>
           <button style={btn} onPointerDown={softDrop}>▼</button>
         </div>
-        <div style={{ flex: 2, display: "flex", flexDirection: "column", gap: 8 }}>
+        <div style={{ flex: 2, display: "flex", gap: 8 }}>
           <button style={{ ...btn, color: "#c800ff", borderColor: "rgba(200,0,255,0.4)", background: "rgba(200,0,255,0.08)" }} onPointerDown={rotate}>⟳</button>
           <button
-            style={{ ...btn, color: "#ffe600", borderColor: "rgba(255,230,0,0.4)", background: "rgba(255,230,0,0.08)" }}
+            style={{ ...btn, flexDirection: "column", color: "#ffe600", borderColor: "rgba(255,230,0,0.4)", background: "rgba(255,230,0,0.08)" }}
             onPointerDown={hardDrop}
           >
-            ⤓ DROP
+            ⤓
           </button>
         </div>
       </div>

@@ -600,15 +600,17 @@ export default function TetrisPage() {
         </div>
       </div>
 
-      {/* 操作ボタン */}
-      <div style={{ width: "100%", maxWidth: 420, display: "flex", flexDirection: "column", gap: 8 }}>
-        <div style={{ display: "flex", gap: 8 }}>
-          <button style={btn} onPointerDown={() => tryMove(-1, 0)}>◀</button>
-          <button style={{ ...btn, color: "#c800ff", borderColor: "rgba(200,0,255,0.4)", background: "rgba(200,0,255,0.08)" }} onPointerDown={rotate}>⟳</button>
-          <button style={btn} onPointerDown={() => tryMove(1, 0)}>▶</button>
-        </div>
-        <div style={{ display: "flex", gap: 8 }}>
+      {/* 操作ボタン: 左に移動系、右に回転・ドロップ */}
+      <div style={{ width: "100%", maxWidth: 420, display: "flex", gap: 8 }}>
+        <div style={{ flex: 3, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ flex: 1, display: "flex", gap: 8 }}>
+            <button style={btn} onPointerDown={() => tryMove(-1, 0)}>◀</button>
+            <button style={btn} onPointerDown={() => tryMove(1, 0)}>▶</button>
+          </div>
           <button style={btn} onPointerDown={softDrop}>▼</button>
+        </div>
+        <div style={{ flex: 2, display: "flex", flexDirection: "column", gap: 8 }}>
+          <button style={{ ...btn, color: "#c800ff", borderColor: "rgba(200,0,255,0.4)", background: "rgba(200,0,255,0.08)" }} onPointerDown={rotate}>⟳</button>
           <button
             style={{ ...btn, color: "#ffe600", borderColor: "rgba(255,230,0,0.4)", background: "rgba(255,230,0,0.08)" }}
             onPointerDown={hardDrop}

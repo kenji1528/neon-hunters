@@ -154,6 +154,7 @@ export default function TetrisPage() {
     const h = canvas.height / (window.devicePixelRatio || 1);
     const cell = Math.min(w / COLS, h / ROWS);
     const ox = (w - cell * COLS) / 2;
+    const oy = (h - cell * ROWS) / 2;
 
     ctx.clearRect(0, 0, w, h);
 
@@ -162,14 +163,14 @@ export default function TetrisPage() {
     ctx.lineWidth = 1;
     for (let x = 0; x <= COLS; x++) {
       ctx.beginPath();
-      ctx.moveTo(ox + x * cell, 0);
-      ctx.lineTo(ox + x * cell, ROWS * cell);
+      ctx.moveTo(ox + x * cell, oy);
+      ctx.lineTo(ox + x * cell, oy + ROWS * cell);
       ctx.stroke();
     }
     for (let y = 0; y <= ROWS; y++) {
       ctx.beginPath();
-      ctx.moveTo(ox, y * cell);
-      ctx.lineTo(ox + COLS * cell, y * cell);
+      ctx.moveTo(ox, oy + y * cell);
+      ctx.lineTo(ox + COLS * cell, oy + y * cell);
       ctx.stroke();
     }
 
@@ -177,7 +178,7 @@ export default function TetrisPage() {
       if (y < 0) return;
       const def = PIECES[type];
       const px = ox + x * cell;
-      const py = y * cell;
+      const py = oy + y * cell;
       if (ghost) {
         ctx.shadowBlur = 0;
         ctx.strokeStyle = def.color + "66";
@@ -365,8 +366,9 @@ export default function TetrisPage() {
       ctx?.scale(dpr, dpr);
     };
     resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
+    const observer = new ResizeObserver(resize);
+    observer.observe(canvas);
+    return () => observer.disconnect();
   }, []);
 
   // キーボード操作(PC でも遊べるように)
@@ -430,8 +432,8 @@ export default function TetrisPage() {
 
   const btn: React.CSSProperties = {
     flex: 1,
-    padding: "16px 0",
-    fontSize: 22,
+    padding: "10px 0",
+    fontSize: 20,
     fontWeight: 700,
     color: "#00f0ff",
     background: "rgba(0, 240, 255, 0.08)",
@@ -447,14 +449,15 @@ export default function TetrisPage() {
   return (
     <main
       style={{
-        minHeight: "100dvh",
+        height: "100dvh",
+        overflow: "hidden",
         background: "radial-gradient(circle at 50% 0%, #101530 0%, #05060f 70%)",
         color: "#e0f7ff",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "12px 12px calc(12px + env(safe-area-inset-bottom))",
-        gap: 10,
+        padding: "8px 12px calc(8px + env(safe-area-inset-bottom))",
+        gap: 8,
         overscrollBehavior: "none",
       }}
     >
@@ -462,7 +465,7 @@ export default function TetrisPage() {
       <div style={{ width: "100%", maxWidth: 420, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <h1
           style={{
-            fontSize: 20,
+            fontSize: 18,
             fontWeight: 800,
             letterSpacing: 4,
             color: "#00f0ff",
@@ -493,7 +496,7 @@ export default function TetrisPage() {
             style={{
               flex: 1,
               textAlign: "center",
-              padding: "6px 0",
+              padding: "4px 0",
               background: "rgba(255,255,255,0.04)",
               border: "1px solid rgba(0,240,255,0.2)",
               borderRadius: 8,
@@ -506,20 +509,20 @@ export default function TetrisPage() {
         ))}
       </div>
 
-      {/* 盤面 + NEXT */}
-      <div style={{ width: "100%", maxWidth: 420, flex: 1, display: "flex", gap: 8, minHeight: 0, position: "relative" }}>
+      {/* 盤面 + NEXT(盤面の高さは画面の残りスペースに合わせる) */}
+      <div style={{ width: "100%", maxWidth: 420, flex: 1, display: "flex", justifyContent: "center", gap: 8, minHeight: 0, position: "relative" }}>
         <div
           style={{
-            flex: 1,
+            flex: "none",
+            height: "100%",
+            aspectRatio: `${COLS} / ${ROWS}`,
+            maxWidth: "calc(100% - 80px)",
             position: "relative",
             border: "1px solid rgba(0,240,255,0.35)",
             borderRadius: 8,
             boxShadow: "0 0 20px rgba(0,240,255,0.15), inset 0 0 30px rgba(0,0,0,0.5)",
             background: "rgba(0,0,0,0.35)",
             overflow: "hidden",
-            aspectRatio: `${COLS} / ${ROWS}`,
-            margin: "0 auto",
-            maxHeight: "100%",
             touchAction: "none",
           }}
           onTouchStart={onTouchStart}

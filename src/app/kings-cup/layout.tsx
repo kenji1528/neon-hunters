@@ -1,0 +1,21 @@
+import type { Metadata, Viewport } from "next";
+
+export const metadata: Metadata = {
+  title: "KING'S CUP",
+  description: "カードを捲って出た数字のルールに従う飲み会ゲーム",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
+export default function KingsCupLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return children;
+}

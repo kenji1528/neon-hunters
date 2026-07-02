@@ -5,6 +5,7 @@ export default function Home() {
       <p>✅ アプリが起動しました</p>
       <p>次は <b>/g/NEON-TEST</b> にアクセスしてください</p>
       <p>🎮 <a href="/tetris" style={{ textDecoration: "underline" }}>テトリスで遊ぶ</a></p>
+      <p>🃏 <a href="/kings-cup" style={{ textDecoration: "underline" }}>King&apos;s Cup で遊ぶ</a></p>
     </main>
   );
 }

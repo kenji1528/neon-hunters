@@ -18,6 +18,19 @@ const RULES: Record<number, { title: string; desc: string }> = {
   12: { title: "立ち上がる", desc: "全員立ち上がって、一番遅かった人が飲む" },
   13: { title: "男子がグイ", desc: "男子全員が飲む!" },
   0: { title: "自分以外全員グイ", desc: "あなた以外の全員が飲む!!" },
+  14: { title: "全力モノマネ", desc: "右隣の2番目の人が全力でモノマネ!" },
+  15: { title: "マジキス顔5秒", desc: "本気のキス顔を5秒キープ!" },
+  16: { title: "なんでも質問", desc: "左隣から順番に、あなたになんでも質問できる!" },
+  17: { title: "大喜利", desc: "お題を出して全員で大喜利!一番スベった人が飲む" },
+};
+
+// 数字以外の特別カード(山札に各2枚)
+const SPECIAL_CARDS: Record<number, { emoji: string; label: string; color: string }> = {
+  0: { emoji: "🃏", label: "JOKER", color: "#7a1fa2" },
+  14: { emoji: "🎭", label: "MIMIC", color: "#d35400" },
+  15: { emoji: "💋", label: "KISS", color: "#e0245e" },
+  16: { emoji: "❓", label: "QUESTION", color: "#1565c0" },
+  17: { emoji: "🎤", label: "OGIRI", color: "#2e7d32" },
 };
 
 const SUITS = [
@@ -30,8 +43,8 @@ const SUITS = [
 const RANK_LABELS = ["JOKER", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
 
 interface Card {
-  rank: number; // 1〜13、0 は Joker
-  suit: number; // Joker は -1
+  rank: number; // 1〜13 は通常カード、それ以外は SPECIAL_CARDS
+  suit: number; // 特別カードは -1
 }
 
 const buildDeck = (): Card[] => {
@@ -39,13 +52,17 @@ const buildDeck = (): Card[] => {
   for (let suit = 0; suit < 4; suit++) {
     for (let rank = 1; rank <= 13; rank++) deck.push({ rank, suit });
   }
-  deck.push({ rank: 0, suit: -1 }, { rank: 0, suit: -1 });
+  for (const rank of Object.keys(SPECIAL_CARDS).map(Number)) {
+    deck.push({ rank, suit: -1 }, { rank, suit: -1 });
+  }
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [deck[i], deck[j]] = [deck[j], deck[i]];
   }
   return deck;
 };
+
+const DECK_SIZE = 52 + Object.keys(SPECIAL_CARDS).length * 2;
 
 const NEON_PINK = "#ff2e88";
 const NEON_CYAN = "#00f0ff";
@@ -56,7 +73,7 @@ export default function KingsCupPage() {
   const [drawn, setDrawn] = useState<Card[]>([]);
 
   // 初回レンダリングはサーバーと一致させるため、シャッフルはクライアント操作時に行う
-  const remaining = deck ? deck.length : 54;
+  const remaining = deck ? deck.length : DECK_SIZE;
   const current = drawn.length > 0 ? drawn[drawn.length - 1] : null;
   const rule = current ? RULES[current.rank] : null;
   const finished = deck !== null && deck.length === 0;
@@ -98,7 +115,7 @@ export default function KingsCupPage() {
               whiteSpace: "nowrap",
             }}
           >
-            {c.suit >= 0 ? `${SUITS[c.suit].symbol}${RANK_LABELS[c.rank]}` : "🃏"}
+            {c.suit >= 0 ? `${SUITS[c.suit].symbol}${RANK_LABELS[c.rank]}` : SPECIAL_CARDS[c.rank].emoji}
           </span>
         )),
     [drawn]
@@ -242,9 +259,16 @@ export default function KingsCupPage() {
                 </>
               ) : (
                 <>
-                  <span style={{ fontSize: 84, lineHeight: 1 }}>🃏</span>
-                  <span style={{ fontSize: 22, fontWeight: 900, color: "#7a1fa2", letterSpacing: 2 }}>
-                    JOKER
+                  <span style={{ fontSize: 84, lineHeight: 1 }}>{SPECIAL_CARDS[current.rank].emoji}</span>
+                  <span
+                    style={{
+                      fontSize: 22,
+                      fontWeight: 900,
+                      color: SPECIAL_CARDS[current.rank].color,
+                      letterSpacing: 2,
+                    }}
+                  >
+                    {SPECIAL_CARDS[current.rank].label}
                   </span>
                 </>
               )

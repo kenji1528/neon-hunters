@@ -24,13 +24,13 @@ const RULES: Record<number, { title: string; desc: string }> = {
   17: { title: "大喜利", desc: "お題を出して全員で大喜利!一番スベった人が飲む" },
 };
 
-// 数字以外の特別カード(山札に各2枚)
-const SPECIAL_CARDS: Record<number, { emoji: string; label: string; color: string }> = {
-  0: { emoji: "🃏", label: "JOKER", color: "#7a1fa2" },
-  14: { emoji: "🎭", label: "MIMIC", color: "#d35400" },
-  15: { emoji: "💋", label: "KISS", color: "#e0245e" },
-  16: { emoji: "❓", label: "QUESTION", color: "#1565c0" },
-  17: { emoji: "🎤", label: "OGIRI", color: "#2e7d32" },
+// 数字以外の特別カード(count は山札に入る枚数)
+const SPECIAL_CARDS: Record<number, { emoji: string; label: string; color: string; count: number }> = {
+  0: { emoji: "🃏", label: "JOKER", color: "#7a1fa2", count: 2 },
+  14: { emoji: "🎭", label: "MIMIC", color: "#d35400", count: 4 },
+  15: { emoji: "💋", label: "KISS", color: "#e0245e", count: 4 },
+  16: { emoji: "❓", label: "QUESTION", color: "#1565c0", count: 4 },
+  17: { emoji: "🎤", label: "OGIRI", color: "#2e7d32", count: 4 },
 };
 
 const SUITS = [
@@ -52,8 +52,8 @@ const buildDeck = (): Card[] => {
   for (let suit = 0; suit < 4; suit++) {
     for (let rank = 1; rank <= 13; rank++) deck.push({ rank, suit });
   }
-  for (const rank of Object.keys(SPECIAL_CARDS).map(Number)) {
-    deck.push({ rank, suit: -1 }, { rank, suit: -1 });
+  for (const [rank, { count }] of Object.entries(SPECIAL_CARDS)) {
+    for (let i = 0; i < count; i++) deck.push({ rank: Number(rank), suit: -1 });
   }
   for (let i = deck.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -62,7 +62,7 @@ const buildDeck = (): Card[] => {
   return deck;
 };
 
-const DECK_SIZE = 52 + Object.keys(SPECIAL_CARDS).length * 2;
+const DECK_SIZE = 52 + Object.values(SPECIAL_CARDS).reduce((sum, c) => sum + c.count, 0);
 
 const NEON_PINK = "#ff2e88";
 const NEON_CYAN = "#00f0ff";
